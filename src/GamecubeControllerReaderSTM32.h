@@ -48,7 +48,7 @@ private:
 	static const uint32_t microsPerTry = 50;
 	static const uint32_t quarterBitSendingCycles = cyclesPerUS * 5 / 4;
 	static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
-	static const uint32_t halfBitReceiveCycles = cyclesPerUS * 2;
+	static const uint32_t halfBitReceiveCycles = cyclesPerUS * 1;
 
 private:
 	PortData port;
