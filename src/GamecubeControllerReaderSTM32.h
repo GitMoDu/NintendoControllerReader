@@ -12,6 +12,14 @@ typedef struct {
 	uint32_t pinNumber;
 } PortData;
 
+
+typedef struct {
+	uint16_t buttons;
+	uint8_t joystickX;
+	uint8_t joystickY;
+} N64Data_t;
+
+
 typedef struct {
 	uint16_t buttons;
 	uint8_t joystickX;
@@ -40,9 +48,9 @@ public:
 	{}
 };
 
-class GameCubeController : public GameController
+class NintendoProtocolController : public GameController
 {
-private:
+protected:
 	static const uint8_t maxFails = 4;
 	static const uint32_t cyclesPerUS = (SystemCoreClock / 1000000ul);
 	static const uint32_t microsPerTry = 50;
@@ -50,12 +58,27 @@ private:
 	static const uint32_t bitReceiveCycles = cyclesPerUS * 4;
 	static const uint32_t halfBitReceiveCycles = cyclesPerUS * 1;
 
-private:
+protected:
 	PortData port;
 	unsigned fails;
-	GameCubeData_t gcData;
 
-private:
+public:
+	NintendoProtocolController() : GameController()
+	{
+
+	}
+
+	bool begin()
+	{
+		gpio_set_mode(port.device, port.pinNumber, GPIO_OUTPUT_OD); // set open drain output
+		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+		DWT->CTRL |= 1;
+		fails = maxFails; // force update
+
+		return true;
+	}
+
+protected:
 	// at most 32 bits can be sent
 	void sendBits(uint32_t data, uint8_t bits) {
 		data <<= 32 - bits;
@@ -103,7 +126,7 @@ private:
 					data++;
 					bitmap = 0x80;
 					if (bits)
-						* data = 0;
+						*data = 0;
 				}
 				while (!gpio_read_bit(port.device, port.pinNumber) && --timeout);
 				if (timeout == 0) {
@@ -115,15 +138,92 @@ private:
 		return bits == 0;
 	}
 
-public:
-	bool begin()
-	{
-		gpio_set_mode(port.device, port.pinNumber, GPIO_OUTPUT_OD); // set open drain output
-		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-		DWT->CTRL |= 1;
-		fails = maxFails; // force update
+};
 
-		return true;
+class N64Controller : public NintendoProtocolController
+{
+private:
+	N64Data_t n64Data;
+
+public:
+
+	enum N64Buttons : uint8_t
+	{
+		Right = 0,
+		Left = 1,
+		Down = 2,
+		Up = 3,
+		Start = 4,
+		Z = 5,
+		B = 6,
+		A = 7,
+		CRight = 8,
+		CLeft = 9,
+		CDown = 10,
+		CUp = 11,
+		R = 12,
+		L = 13
+	};
+
+public:
+	N64Controller(const uint8_t pin) : NintendoProtocolController()
+	{
+		setPortData(&port, pin);
+	}
+
+	bool read(N64Data_t* data) {
+		return readWithRumble(data, false);
+	}
+
+	bool readWithRumble(N64Data_t* data, bool rumble) {
+		if (fails >= maxFails) {
+			nvic_globalirq_disable();
+			sendBits(0b000000001l, 9);
+			nvic_globalirq_enable();
+			delayMicroseconds(microsPerTry);
+			fails = 0;
+		}
+		nvic_globalirq_disable();
+		sendBits(rumble ? 0b0100000000000011000000011l : 0b0100000000000011000000001l, 25);
+		bool success = receiveBits(&n64Data, 32);
+		nvic_globalirq_enable();
+		if (success && 0 == (n64Data.buttons & 0x80) && (n64Data.buttons & 0x8000)) {
+			*data = n64Data;
+			return true;
+		}
+		else {
+			fails++;
+			return false;
+		}
+	}
+};
+
+class GameCubeController : public NintendoProtocolController
+{
+private:
+	GameCubeData_t gcData;
+
+public:
+	enum GamecubeButtons : uint8_t
+	{
+		A = 0,
+		B = 1,
+		X = 2,
+		Y = 3,
+		Start = 4,
+		Left = 8,
+		Right = 9,
+		Down = 10,
+		Up = 11,
+		Z = 12,
+		R = 13,
+		L = 14
+	};
+
+public:
+	GameCubeController(const uint8_t pin) : NintendoProtocolController()
+	{
+		setPortData(&port, pin);
 	}
 
 	bool read(GameCubeData_t* data) {
@@ -150,10 +250,6 @@ public:
 			fails++;
 			return false;
 		}
-	}
-	GameCubeController(const unsigned pin) : GameController()
-	{
-		setPortData(&port, pin);
 	}
 };
 
