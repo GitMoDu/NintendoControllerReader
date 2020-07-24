@@ -115,20 +115,20 @@ class N64Controller : public NintendoProtocolController
 public:
 	enum N64Buttons : uint8_t
 	{
-		Right = 15,
-		Left = 14,
-		Down = 13,
-		Up = 12,
-		Start = 11,
-		Z = 10,
-		B = 9,
-		A = 8,
-		CRight = 7,
-		CLeft = 6,
-		CDown = 5,
-		CUp = 4,
-		R = 3,
-		L = 2
+		Right = 0,
+		Left = 1,
+		Down = 2,
+		Up = 3,
+		Start = 4,
+		Z = 5,
+		B = 6,
+		A = 7,
+		CRight = 8,
+		CLeft = 9,
+		CDown = 10,
+		CUp = 11,
+		R = 12,
+		L = 13
 	};
 
 public:
