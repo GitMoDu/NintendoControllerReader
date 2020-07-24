@@ -193,11 +193,11 @@ public:
 	{
 	}
 
-	bool read(GameCubeData_t* data) {
-		return readWithRumble(data, false);
+	bool Read(GameCubeData_t* data) {
+		return ReadWithRumble(data, false);
 	}
 
-	bool readWithRumble(GameCubeData_t* data, bool rumble) {
+	bool ReadWithRumble(GameCubeData_t* data, bool rumble) {
 		bool success;
 
 		nvic_globalirq_disable();
