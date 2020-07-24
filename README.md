@@ -1,16 +1,14 @@
-## GameControllersSTM32  
-GamecubeControllerReaderSTM32 is a fork of the GameControllersSTM32 library that allows reading some miscellaneous game controllers on STM32F1 boards.
-Supported controllers include:
- 
-## Purpose  
-Read data from:
+## NintendoControllerReaderSTM32  
+Library for reading Nintendo game controllers on STM32F1/Maple Mini boards.
 
- * GameCube
+Low level protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
+
+## Supported controllers include:
+  * Nintendo 64
+  * GameCube
 
 
 ## Usage  
-* `GameCubeController controller = GameCubeController(unsigned pin);`
+* `N64Controller Controller(CONTROLLER_PIN);`
 
-* `bool controller.begin();` (Returns false on fail)
-
-* `bool controller.read(GameControllerData_t* data);`  (Returns false on fail)
+* `bool Controller.Read(N64Data_t* data);`  (Returns false on fail and tries to reconnect controller)
