@@ -46,6 +46,7 @@ public:
 	void Setup()
 	{
 		gpio_set_mode(device, pinNumber, GPIO_OUTPUT_OD); // set open drain output
+		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 		DWT->CTRL |= 1;
 	}
 
