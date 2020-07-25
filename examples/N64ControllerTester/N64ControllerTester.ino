@@ -15,10 +15,8 @@ void setup()
 	delay(1000);
 	Serial.println(F("Nintendo 64 Controller Tester"));
 
-	pinMode(PA1, OUTPUT);
 }
 
-bool connected = false;
 void loop()
 {
 	if (Controller.Read(&RawData))
