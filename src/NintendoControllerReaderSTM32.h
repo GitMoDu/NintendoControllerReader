@@ -137,6 +137,8 @@ public:
 	{
 	}
 
+
+	// Each update lasts around 200us.
 	bool Read(N64Data_t* data)
 	{
 		bool success;
@@ -194,6 +196,8 @@ public:
 	{
 	}
 
+
+	// Each update lasts around 400us.
 	bool Read(GameCubeData_t* data) {
 		return ReadWithRumble(data, false);
 	}
