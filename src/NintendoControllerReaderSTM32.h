@@ -114,7 +114,7 @@ protected:
 class N64Controller : public NintendoProtocolController
 {
 public:
-	enum N64Buttons : uint8_t
+	enum N64Buttons 
 	{
 		Right = 0,
 		Left = 1,
@@ -175,7 +175,7 @@ private:
 	GameCubeData_t gcData;
 
 public:
-	enum GamecubeButtons : uint8_t
+	enum GamecubeButtons
 	{
 		A = 0,
 		B = 1,
