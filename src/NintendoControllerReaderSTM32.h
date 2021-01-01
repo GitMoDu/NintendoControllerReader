@@ -3,15 +3,14 @@
 
 #include <Support\dwt.h>
 
-typedef struct
+struct N64Data_t
 {
 	uint16_t Buttons;
 	int8_t JoystickX;
 	int8_t JoystickY;
-} N64Data_t;
+};
 
-
-typedef struct
+struct GameCubeData_t
 {
 	uint16_t Buttons;
 	uint8_t JoystickX;
@@ -20,7 +19,7 @@ typedef struct
 	uint8_t JoystickCY;
 	uint8_t SliderLeft;
 	uint8_t SliderRight;
-} GameCubeData_t;
+};
 
 class NintendoProtocolController
 {
