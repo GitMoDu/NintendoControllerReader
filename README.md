@@ -1,7 +1,7 @@
-## NintendoControllerReaderSTM32  
-Library for reading Nintendo game controllers on STM32F1/Maple Mini boards.
+## NintendoControllerReader
+Library for reading Nintendo game controllers on Arduino boards, targeted at STM32F1/Maple Mini boards.
 
-Low level protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
+Low level bit bang protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
 
 ## Supported controllers include:
   * Nintendo 64
