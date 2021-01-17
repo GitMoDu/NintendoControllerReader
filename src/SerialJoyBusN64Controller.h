@@ -8,7 +8,7 @@
 
 
 // Basic controller poller-reader, no support for controller paks.
-class SerialJoyN64Controller : public SerialJoyBus<4>
+class SerialJoyBusN64Controller : public SerialJoyBus<4>
 {
 private:
 	enum CommandCode
@@ -52,7 +52,8 @@ public:
 	Nintendo64::Data_t Data;
 
 public:
-	SerialJoyN64Controller(HardwareSerial* serial) : SerialJoyBus<4>(serial), Data()
+	SerialJoyBusN64Controller(HardwareSerial* serial) 
+		: SerialJoyBus<4>(serial), Data()
 	{}
 
 	// To be called once per target period.

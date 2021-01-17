@@ -1,4 +1,4 @@
-// SerialJoyGC.h
+// SerialJoyBusGCController.h
 
 #ifndef _SERIAL_JOYBUS_GAMECUBE_CONTROLLER_READER_h
 #define _SERIAL_JOYBUS_GAMECUBE_CONTROLLER_READER_h
@@ -9,7 +9,7 @@
 
 // Controller poller-reader.
 // TODO: not working.
-class SerialJoyGCController : public SerialJoyBus<8>
+class SerialJoyBusGCController : public SerialJoyBus<8>
 {
 private:
 	enum CommandCode
@@ -44,7 +44,7 @@ public:
 	GameCube::Data_t Data;
 
 public:
-	SerialJoyGCController(HardwareSerial* serial) : SerialJoyBus<8>(serial), Data()
+	SerialJoyBusGCController(HardwareSerial* serial) : SerialJoyBus<8>(serial), Data()
 	{
 	}
 

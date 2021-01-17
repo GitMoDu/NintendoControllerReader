@@ -10,7 +10,7 @@ BitBangN64Controller BitBangN64(CONTROLLER_PIN);
 
 HardwareSerial* SerialInstance = &Serial3;
 
-SerialJoyN64Controller JoyBusN64(SerialInstance);
+SerialJoyBusN64Controller JoyBusN64(SerialInstance);
 
 void setup()
 {
