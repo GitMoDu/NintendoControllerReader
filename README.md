@@ -22,4 +22,6 @@ Any Arduino compatible MCU should work with this library, Hardware required/used
 
 `SerialJoyN64Controller  Controller(&Serial3);` (JoyBusOverSerial Version)
 
-`bool Controller.Read(N64Data_t* data);` (Returns false on fail and tries to reconnect controller)
+`bool Controller.Read();` (Returns true on poll success, false on fail and tries to reconnect controller)
+
+`Controller.Data //(N64Data_t);` (Raw controller data is public)
