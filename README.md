@@ -7,9 +7,14 @@ Stops interrupts for the duration of the protocol data exchange (~200us for N64,
 
 ## JoyBus Over Serial
 Based on the work published by qwertymodo (http://www.qwertymodo.com/hardware-projects/n64/n64-controller), this alternate driver uses a serial port, a diode and a resistor to emulate the controllers' JoyBus protocol using a hacked serial port.
+
 (Ab)uses Serial Port to emulate the OneWire-like protocol of JoyBus.
+
 In order to wire this up, we need to tie the UART's Rx and Tx pins together using a Schottky diode, as shown here (https://github.com/dword1511/onewire-over-uart).
-Any Arduino compatible MCU should work with this library, Hardware required/used is a serial port capable of 1250000 bps baud-rate. Interrupts aren't blocked or used.
+
+Any Arduino compatible MCU should work with this library, Hardware required/used is a serial port capable of 1250000 bps baud-rate. 
+
+Interrupts aren't blocked or used.
 
 
 ## Supported controllers include:
