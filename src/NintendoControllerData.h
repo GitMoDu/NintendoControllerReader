@@ -45,9 +45,22 @@ namespace GameCube
 		uint8_t SliderRight;
 	};
 
+	//TODO: Check values.
 	enum Buttons
 	{
 
+		Right = 0,
+		Left = 1,
+		Down = 2,
+		Up = 3,
+		Start = 4,
+		Z = 5,
+		B = 6,
+		A = 7,
+		X = 8,
+		Y = 9,
+		R = 12,
+		L = 13,
 	};
 }
 
