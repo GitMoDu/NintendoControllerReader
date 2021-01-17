@@ -1,4 +1,4 @@
-// SerialJoyBus.h
+//	SerialJoyBus.h
 //	(Ab)uses Serial Port to emulate the OneWire-like protocol of JoyBus.
 //
 //	JoyBus data is LSB transmitted at a 250KHz baud rate.
