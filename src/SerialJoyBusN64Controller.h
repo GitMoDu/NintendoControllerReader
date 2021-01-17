@@ -100,8 +100,8 @@ private:
 			if (ResponseBufferSize >= ResponseSize::PollSize)
 			{
 				// Update controller values.
-				// 2nd bit of second byte is undefined.
-				Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xFD) << 8);
+				// 7th bit of second byte is undefined.
+				Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xBF) << 8);
 				Data.JoystickX = ResponseBuffer[2];
 				Data.JoystickY = ResponseBuffer[3];
 			}
