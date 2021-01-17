@@ -1,12 +1,11 @@
-#include <NintendoControllerReaderSTM32.h>
+#include <BitBangGCController.h>
 
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
 const uint32_t CONTROLLER_PIN = PA0;
 
-
-GameCubeData_t RawData;
-GameCubeController Controller(CONTROLLER_PIN);
+GameCube::Data_t RawData;
+BitBangGCController BitBangGC(CONTROLLER_PIN);
 
 void setup()
 {
@@ -19,24 +18,32 @@ void setup()
 
 void loop()
 {
-	if (Controller.read(&RawData))
+	if (BitBangGC.Poll())
 	{
-		for (uint8_t i = 0; i < (sizeof(RawData.Buttons) * 8); i++)
+		RawData.Buttons = BitBangGC.Data.Buttons;
+		RawData.JoystickX = BitBangGC.Data.JoystickX;
+		RawData.JoystickY = BitBangGC.Data.JoystickY;
+		RawData.JoystickCX = BitBangGC.Data.JoystickCX;
+		RawData.JoystickCY = BitBangGC.Data.JoystickCY;
+		RawData.SliderLeft = BitBangGC.Data.SliderLeft;
+		RawData.SliderRight = BitBangGC.Data.SliderRight;
+
+		for (uint8_t i = 0; i < sizeof(RawData.Buttons) * 8; i++)
 		{
-			Serial.print((RawData.Buttons & (1 << i)) >> i);
+			Serial.print((RawData.Buttons >> i) & 0b1);
 		}
 
-		Serial.print('\t');
+		Serial.print(F("\tJoystick: "));
 		Serial.print(RawData.JoystickX);
 		Serial.print('\t');
 		Serial.print(RawData.JoystickY);
 
-		Serial.print('\t');
+		Serial.print(F("\tC-stick: "));
 		Serial.print(RawData.JoystickCX);
 		Serial.print('\t');
 		Serial.print(RawData.JoystickCY);
 
-		Serial.print('\t');
+		Serial.print(F("\Sliders: "));
 		Serial.print(RawData.SliderLeft);
 		Serial.print('\t');
 		Serial.print(RawData.SliderRight);
