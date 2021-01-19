@@ -56,7 +56,7 @@ public:
 		Transmit1Byte(CommandCode::PollCode);
 	}
 
-	// Can be called after ~200 us of poll, if low latency is desired.
+	// Can be called after ~1 ms of poll, if low latency is desired.
 	// Will update controller values and fire events.
 	// Returns true when a response was found.
 	const bool Read()
