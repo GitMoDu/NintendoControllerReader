@@ -118,18 +118,19 @@ public:
 		}
 		else if (LastCommandSent == CommandCode::PollCode)
 		{
-			// If we've on a failed poll, set device inactive (requires wake-up).
+			// If we're on a failed poll, set device inactive (requires wake-up).
 			ControllerActive = false;
 		}
 
+		// Clear values if controller isn't present.
 		if (!ControllerActive)
 		{
 			Data.Reset();
 		}
+
 		BufferDiscard();
 
 		return ControllerActive && LastCommandSent && CommandCode::PollCode;
-
 	}
 };
 #endif
