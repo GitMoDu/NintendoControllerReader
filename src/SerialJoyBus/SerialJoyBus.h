@@ -183,10 +183,21 @@ protected:
 		return false;
 	}
 
-	//void TransmitBuffer(uint8_t* buffer, const uint8_t length)
-	//{
-	//	//TODO:
-	//}
+	// Pushes 3 bytes, 2 bits at a time to the serial buffer.
+	void Transmit3Bytes(const uint32_t lower3bytes)
+	{
+		// Send 24 bits, 2 bits at a time.
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			uint8_t byteValue = (lower3bytes >> (i * 8)) & 0xFF;
+			WriteByte(byteValue);
+		}
+
+		SerialInstance->write(BitCode::CodeMasterStop);
+
+		// Expected echo bytes: 4 bit pairs and 1 stop code.
+		EchoBytes = (BytesPerByte * 3) + 1;
+	}
 
 	// Pushes 1 byte, 2 bits at a time to the serial buffer.
 	void Transmit1Byte(const uint8_t value)
