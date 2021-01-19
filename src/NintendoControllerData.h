@@ -66,19 +66,18 @@ namespace GameCube
 	//TODO: Check values.
 	enum Buttons
 	{
-
-		Right = 0,
-		Left = 1,
-		Down = 2,
-		Up = 3,
+		A = 0,
+		B = 1,
+		X = 2,
+		Y = 3,
 		Start = 4,
-		Z = 5,
-		B = 6,
-		A = 7,
-		X = 8,
-		Y = 9,
-		R = 12,
-		L = 13,
+		Left = 8,
+		Right = 9,
+		Down = 10,
+		Up = 11,
+		Z = 12,
+		R = 13,
+		L = 14
 	};
 }
 

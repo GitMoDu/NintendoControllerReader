@@ -14,31 +14,26 @@ class SerialJoyBusGCController : public SerialJoyBus<8>
 private:
 	enum CommandCode
 	{
-		StatusCode = 0x00,
+		NoCommandCode = 0xFF,
+		//StatusCode = 0x10, //TODO:
+		WakeUpCode = 0x00,
 		PollCode = 0x01,
-		ResetCode = 0xFF,
-		NoCommandCode = 0xF0
-	};
 
-	enum ResponseStatusCode
-	{
-	};
-
-	enum ResponseType
-	{
-		StatusType,
-		PollType,
-		ResetType
 	};
 
 	enum ResponseSize
 	{
-		StatusSize = 3,
-		PollSize = 8,
+		WakeUpSize = 3, // Full transaction takes ~140 us.
+		PollSize = 8, // Full transaction takes ~370 us.
 		ResetSize = 1
 	};
 
+	static const uint32_t PollCodeNoRumble = 0b000000000000001101000000;
+	static const uint32_t PollCodeRumble = 0b000000000000001101000001;
+
 	CommandCode LastCommandSent = CommandCode::NoCommandCode;
+
+	bool ControllerActive = false;
 
 public:
 	GameCube::Data_t Data;
@@ -53,78 +48,88 @@ public:
 	{
 		SerialDiscard();
 		BufferDiscard();
-		LastCommandSent = CommandCode::PollCode;
-		Transmit1Byte(CommandCode::PollCode);
+
+		if (ControllerActive)
+		{
+			LastCommandSent = CommandCode::PollCode;
+			Transmit3Bytes(PollCodeNoRumble);
+		}
+		else
+		{
+			// Send a wake-up code, if controller isn't responding to polling.
+			LastCommandSent = CommandCode::WakeUpCode;
+			Transmit1Byte(CommandCode::WakeUpCode);
+		}
 	}
 
-	// Can be called after ~200 us of poll, if low latency is desired;
+	// Can be called after ~2 ms of poll, if low latency is desired;
 	// Or just before a poll, for simplicity.
 	// Will update controller values.
 	const bool Read()
 	{
 		if (GetResponseBuffer())
 		{
-			Serial.print(F("Response: "));
-			Serial.print(ResponseBufferSize);
-			Serial.print(F("\t[\t"));
-			for (uint8_t i = 0; i < ResponseBufferSize; i++)
+			// Validate for size based on expected response.
+			switch (LastCommandSent)
 			{
-				Serial.print(F("0x"));
-				Serial.print(ResponseBuffer[i], HEX);
-				if (i < ResponseBufferSize - 1)
+				//case CommandCode::StatusCode:
+				//	if (ResponseBufferSize >= ResponseSize::StatusSize)
+				//	{
+				//		//TODO: Handle on status received.
+				//	}
+				//	break;
+			case CommandCode::WakeUpCode:
+				if (ResponseBufferSize >= ResponseSize::WakeUpSize)
 				{
-					Serial.print(F("|"));
+					//TODO: Handle on status received.
+					ControllerActive = true;
 				}
+				else
+				{
+					ControllerActive = false;
+				}
+				break;
+			case CommandCode::PollCode:
+				if (ResponseBufferSize >= ResponseSize::PollSize &&
+					(ResponseBuffer[1] & 0x80)) // Last bit of second byte should be true.
+				{
+					// Update controller values.
+					// 2nd bit of second byte is undefined.
+					Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0x7F) << 8);
+					Data.JoystickX = ResponseBuffer[2] - INT8_MAX;
+					Data.JoystickY = ResponseBuffer[3] - INT8_MAX;
+					Data.JoystickCX = ResponseBuffer[4] - INT8_MAX;
+					Data.JoystickCY = ResponseBuffer[5] - INT8_MAX;
+					Data.SliderLeft = ResponseBuffer[6];
+					Data.SliderRight = ResponseBuffer[7];
+
+					ControllerActive = true;
+				}
+				else
+				{
+					ControllerActive = false;
+				}
+				break;
+			default:
+				// Should never happen.
+				ControllerActive = false;
+				break;
 			}
-			Serial.println(']');
-
-			ProcessResponse();
 		}
-
-		BufferDiscard();
-	}
-
-private:
-	void ProcessResponse()
-	{
-		// Validate for size based on expected response.
-		switch (LastCommandSent)
+		else if (LastCommandSent == CommandCode::PollCode)
 		{
-		case CommandCode::StatusCode:
-			if (ResponseBufferSize >= ResponseSize::StatusSize)
-			{
-				//TODO: Handle on status received.
-			}
-			break;
-		case CommandCode::PollCode:
-			if (ResponseBufferSize >= ResponseSize::PollSize)
-			{
-				// Update controller values.
-				// 2nd bit of second byte is undefined.
-				Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xFD) << 8);
-				Data.JoystickX = ResponseBuffer[2];
-				Data.JoystickY = ResponseBuffer[3];
-				Data.JoystickCX = ResponseBuffer[4];
-				Data.JoystickCY = ResponseBuffer[5];
-				Data.SliderLeft = ResponseBuffer[6];
-				Data.SliderRight = ResponseBuffer[7];
-			}
-			break;
-
-		case CommandCode::ResetCode:
-			if (ResponseBufferSize >= ResponseSize::ResetSize)
-			{
-				// Check for Command response.
-				if (ResponseBuffer[0] == ~ResetCode)
-				{
-					//TODO: Handle on reset command ok.
-				}
-			}
-			break;
-		default:
-			// Should never happen.
-			break;
+			// If we've on a failed poll, set device inactive (requires wake-up).
+			ControllerActive = false;
 		}
+
+		if (!ControllerActive)
+		{
+			Data.Reset();
+		}
+		BufferDiscard();
+
+		return ControllerActive && LastCommandSent && CommandCode::PollCode;
+
 	}
 };
 #endif
