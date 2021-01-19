@@ -28,6 +28,8 @@ Interrupts aren't blocked or used.
 `SerialJoyN64Controller  Controller(&Serial3);` (JoyBusOverSerial Version)
 
 `Controller.Poll();` (Request data poll)
+
+
 `bool Controller.Read();` (Returns true on poll success, false on fail and tries to reconnect controller)
 
 `Controller.Data //(N64Data_t);` (Raw controller data is public)
