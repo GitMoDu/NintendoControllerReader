@@ -10,6 +10,13 @@ namespace Nintendo64
 		uint16_t Buttons;
 		int8_t JoystickX;
 		int8_t JoystickY;
+
+		void Reset()
+		{
+			Buttons = 0;
+			JoystickX = 0;
+			JoystickY = 0;
+		}
 	};
 
 	enum Buttons
@@ -43,6 +50,17 @@ namespace GameCube
 		int8_t JoystickCY;
 		uint8_t SliderLeft;
 		uint8_t SliderRight;
+
+		void Reset()
+		{
+			Buttons = 0;
+			JoystickX = 0;
+			JoystickY = 0;
+			JoystickCX = 0;
+			JoystickCY = 0;
+			SliderLeft = 0;
+			SliderRight = 0;
+		}
 	};
 
 	//TODO: Check values.
