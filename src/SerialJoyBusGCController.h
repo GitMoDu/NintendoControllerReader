@@ -8,7 +8,6 @@
 
 
 // Controller poller-reader.
-// TODO: not working.
 class SerialJoyBusGCController : public SerialJoyBus<8>
 {
 private:
