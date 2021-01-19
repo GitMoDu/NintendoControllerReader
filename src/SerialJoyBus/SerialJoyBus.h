@@ -191,6 +191,36 @@ protected:
 	// Pushes 1 byte, 2 bits at a time to the serial buffer.
 	void Transmit1Byte(const uint8_t value)
 	{
+		WriteByte(value);
+
+		SerialInstance->write(BitCode::CodeMasterStop);
+
+		// Expected echo bytes: 4 bit pairs and 1 stop code.
+		EchoBytes = BytesPerByte + 1;
+	}
+
+	void BufferDiscard()
+	{
+		ResponseBufferSize = 0;
+	}
+
+	void SerialDiscard()
+	{
+		while (SerialInstance->available())
+		{
+			SerialInstance->read();
+		}
+
+		EchoBytes = 0;
+
+		// Reset byte buffer.
+		ByteBuffer = 0;
+		ByteIndex = 0;
+	}
+
+private:
+	void WriteByte(const uint8_t value)
+	{
 		// Send 8 bits, in 4 x 2 bits at a time.
 		// Initiate write command by bringing the line down with the first bit pair.
 		for (uint8_t i = 0; i < (BytesPerByte * ByteBits); i += ByteBits)
@@ -217,30 +247,6 @@ protected:
 				return;
 			}
 		}
-
-		SerialInstance->write(BitCode::CodeMasterStop);
-
-		// Expected echo bytes: 4 bit pairs and 1 stop code.
-		EchoBytes = BytesPerByte + 1;
-	}
-
-	void BufferDiscard()
-	{
-		ResponseBufferSize = 0;
-	}
-
-	void SerialDiscard()
-	{
-		while (SerialInstance->available())
-		{
-			SerialInstance->read();
-		}
-
-		EchoBytes = 0;
-
-		// Reset byte buffer.
-		ByteBuffer = 0;
-		ByteIndex = 0;
 	}
 };
 #endif
