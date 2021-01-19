@@ -22,7 +22,7 @@ void setup()
 	// Serial Joy requires a start to initialize the serial hardware.
 	JoyBusGC.Start();
 
-	Serial.println(F("Nintendo 64 Controller Tester"));
+	Serial.println(F("GameCube Controller Tester"));
 }
 
 const bool SerialJoyLoop()
