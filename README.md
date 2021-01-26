@@ -1,6 +1,10 @@
 ## NintendoControllerReader
 Library for reading Nintendo game controllers on Arduino boards, targeted at STM32F1/Maple Mini boards.
 
+##
+
+![](https://raw.githubusercontent.com/GitMoDu/NintendoControllerReader/master/media/GameCubeControllerTesting.gif)
+
 ## Bit Banged JoyBus
 Low level bit bang protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
 Stops interrupts for the duration of the protocol data exchange (~200us for N64, ~400us for GC).
