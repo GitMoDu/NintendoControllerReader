@@ -20,7 +20,9 @@ Interrupts aren't blocked or used.
 
 ## Bit Banged JoyBus
 Low level bit bang protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
+
 Stops interrupts for the duration of the protocol data exchange (~200us for N64, ~400us for GC).
+
 Only used as a fallback solution where serial isn't available.
 
 
