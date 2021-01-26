@@ -38,6 +38,9 @@ Only used as a fallback solution where serial isn't available.
 
 
 `Controller.Poll();` (Request data poll)
+
 `delay(1)` (MCU can do other things while the serial port fills up with the response)
+
 `bool Controller.Read();` (Returns true on poll success, tries to reconnect controller on fail)
+
 `Controller.Data //(N64Data_t);` (Raw controller data is public)
