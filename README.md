@@ -5,9 +5,6 @@ Library for reading Nintendo game controllers on Arduino boards, targeted at STM
 
 ![](https://raw.githubusercontent.com/GitMoDu/NintendoControllerReader/master/media/GameCubeControllerTesting.gif)
 
-## Bit Banged JoyBus
-Low level bit bang protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
-Stops interrupts for the duration of the protocol data exchange (~200us for N64, ~400us for GC).
 
 ## JoyBus Over Serial
 Based on the work published by qwertymodo (http://www.qwertymodo.com/hardware-projects/n64/n64-controller), this alternate driver uses a serial port, a diode and a resistor to emulate the controllers' JoyBus protocol using a hacked serial port.
@@ -21,20 +18,24 @@ Any Arduino compatible MCU should work with this library, Hardware required/used
 
 Interrupts aren't blocked or used.
 
+## Bit Banged JoyBus
+Low level bit bang protocol forked from GameControllersSTM32 (https://github.com/arpruss/GameControllersSTM32).
+Stops interrupts for the duration of the protocol data exchange (~200us for N64, ~400us for GC).
+Only used as a fallback solution where serial isn't available.
 
-## Supported controllers include:
+
+## Supported controllers:
   * Nintendo 64
   * GameCube
 
 
 ## Usage  
-`BitBangN64Controller Controller(CONTROLLER_PIN);` (BitBang Version)
-
 `SerialJoyN64Controller  Controller(&Serial3);` (JoyBusOverSerial Version)
 
+`BitBangN64Controller Controller(CONTROLLER_PIN);` (BitBang Version)
+
+
 `Controller.Poll();` (Request data poll)
-
-
-`bool Controller.Read();` (Returns true on poll success, false on fail and tries to reconnect controller)
-
+`delay(1)` (MCU can do other things while the serial port fills up with the response)
+`bool Controller.Read();` (Returns true on poll success, tries to reconnect controller on fail)
 `Controller.Data //(N64Data_t);` (Raw controller data is public)
