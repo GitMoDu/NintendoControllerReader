@@ -3,6 +3,10 @@
 #ifndef _SERIAL_JOYBUS_NINTENDO_64_CONTROLLER_READER_h
 #define _SERIAL_JOYBUS_NINTENDO_64_CONTROLLER_READER_h
 
+#ifndef ARDUINO_ARCH_STM32F1
+#error This library driver only supports STM32F1.
+#else
+
 #include "SerialJoyBus\SerialJoyBus.h"
 #include <NintendoControllerData.h>
 
@@ -122,4 +126,5 @@ public:
 		return false;
 	}
 };
+#endif
 #endif

@@ -29,6 +29,9 @@
 #ifndef _SERIALJOYBUS_h
 #define _SERIALJOYBUS_h
 
+#ifndef ARDUINO_ARCH_STM32F1
+#error This library driver only supports STM32F1.
+#else
 #include <HardwareSerial.h>
 #include <stdint.h>
 
@@ -260,4 +263,5 @@ private:
 		}
 	}
 };
+#endif
 #endif
