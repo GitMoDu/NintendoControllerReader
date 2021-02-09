@@ -14,7 +14,7 @@ Based on the work published by qwertymodo (http://www.qwertymodo.com/hardware-pr
 In order to wire this up, we need to tie the UART's Rx and Tx pins together using a Schottky diode, as shown here (https://github.com/dword1511/onewire-over-uart).
 ![](https://raw.githubusercontent.com/GitMoDu/NintendoControllerReader/master/media/pp2od_rd.png)
 
-Any Arduino compatible MCU should work with this library, Hardware required/used is a serial port capable of 1250000 bps baud-rate. 
+Any Arduino compatible MCU with fast enough serial should work with this library, Hardware required/used is a serial port capable of 1250000 bps baud-rate. That does not include the AVR line of Arduinos, sadly.
 
 Interrupts aren't blocked or used.
 
