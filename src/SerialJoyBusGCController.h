@@ -42,7 +42,9 @@ public:
 	{
 	}
 
-	// To be called once per target period.
+	/// <summary>
+	/// To be called once per target period.
+	/// </summary>
 	void Poll()
 	{
 		SerialDiscard();
@@ -61,9 +63,12 @@ public:
 		}
 	}
 
-	// Can be called after ~2 ms of poll, if low latency is desired;
-	// Or just before a poll, for simplicity.
-	// Will update controller values.
+	/// <summary>
+	/// Can be called after ~2 ms of poll, if low latency is desired,
+	/// or just before a poll, for simplicity. 
+	/// Will update controller values.
+	/// </summary>
+	/// <returns>True when a response was found.</returns>
 	const bool Read()
 	{
 		if (GetResponseBuffer())

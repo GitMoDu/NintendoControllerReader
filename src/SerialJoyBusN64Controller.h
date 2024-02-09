@@ -57,7 +57,9 @@ public:
 		: SerialJoyBus<4>(serial), Data()
 	{}
 
-	// To be called once per target period.
+	/// <summary>
+	/// To be called once per target period.
+	/// </summary>
 	void Poll()
 	{
 		SerialDiscard();
@@ -66,9 +68,11 @@ public:
 		Transmit1Byte((uint8_t)CommandCode::PollCode);
 	}
 
-	// Can be called after ~1 ms of poll, if low latency is desired.
-	// Will update controller values and fire events.
-	// Returns true when a response was found.
+	/// <summary>
+	/// Can be called after ~1 ms of poll, if low latency is desired.
+	/// Will update controller values and fire events.
+	/// </summary>
+	/// <returns>True when a response was found.</returns>
 	const bool Read()
 	{
 		if (GetResponseBuffer())
