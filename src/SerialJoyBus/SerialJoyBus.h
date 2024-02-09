@@ -184,6 +184,31 @@ protected:
 		return false;
 	}
 
+	/// <summary>
+	/// Fills the response buffer until serial input is clear or the receive buffer is full.
+	/// </summary>
+	/// <returns>True when a message is available.</returns>
+	const bool GetResponseBufferAsync()
+	{
+		if (ResponseBufferSize <= MaxResponseSize &&
+			SerialInstance->available())
+		{
+			// Discard echo bytes.
+			if (EchoBytes > 0)
+			{
+				SerialInstance->read();
+				EchoBytes--;
+			}
+			else if (ReadByte())
+			{
+				// Stop bit detected, message received.
+				return ResponseBufferSize > 0;
+			}
+		}
+
+		return false;
+	}
+
 	// Pushes 3 bytes, 2 bits at a time to the serial buffer.
 	void Transmit3Bytes(const uint32_t lower3bytes)
 	{
