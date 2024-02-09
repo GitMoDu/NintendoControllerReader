@@ -53,7 +53,7 @@ private:
 	static const uint32_t ConverterBaudrate = RealBaudrate * (BytesPerByte + 1);
 
 	// Data codes converted to serial values.
-	enum BitPair
+	enum class BitPair : uint8_t
 	{
 		Code00 = 0x08,
 		Code01 = 0xE8,
@@ -62,7 +62,7 @@ private:
 	};
 
 	// Stop bit codes converted to serial values.
-	enum BitCode
+	enum class BitCode : uint8_t
 	{
 		CodeMasterStop = 0x00,
 		CodeSlaveStop = 0xFE,
@@ -112,33 +112,31 @@ private:
 	// Returns true on stop bit code detected.
 	const bool ReadByte()
 	{
-		uint8_t bitPairCode = SerialInstance->read();
+		const uint8_t bitPairCode = SerialInstance->read();
 
 		// LSB reception.
 		// Bits are inverted in order, 
 		// as we build up a whole byte, from the top.
 		switch (bitPairCode)
 		{
-		case BitPair::Code00:
+		case (uint8_t)BitPair::Code00:
 			// ByteBuffer += 0b00 << ((BytesPerByte - ByteIndex) * ByteBits);
 			ByteIndex++;
 			break;
-		case BitPair::Code01:
+		case (uint8_t)BitPair::Code01:
 			ByteBuffer += 0b01 << ((BytesPerByte - ByteIndex - 1) * ByteBits);
 			ByteIndex++;
 			break;
-		case BitPair::Code10:
+		case (uint8_t)BitPair::Code10:
 			ByteBuffer += 0b10 << ((BytesPerByte - ByteIndex - 1) * ByteBits);
 			ByteIndex++;
 			break;
-		case BitPair::Code11:
+		case (uint8_t)BitPair::Code11:
 			ByteBuffer += 0b11 << ((BytesPerByte - ByteIndex - 1) * ByteBits);
 			ByteIndex++;
 			break;
-		case BitCode::CodeSlaveStop:
-			SerialDiscard();
-			return true;
-		case BitCode::CodeSlaveStopAlternate:
+		case (uint8_t)BitCode::CodeSlaveStop:
+		case (uint8_t)BitCode::CodeSlaveStopAlternate:
 			SerialDiscard();
 			return true;
 		default:// Invalid code received, message is invalidated.
@@ -196,7 +194,7 @@ protected:
 			WriteByte(byteValue);
 		}
 
-		SerialInstance->write(BitCode::CodeMasterStop);
+		SerialInstance->write((uint8_t)BitCode::CodeMasterStop);
 
 		// Expected echo bytes: 4 bit pairs and 1 stop code.
 		EchoBytes = (BytesPerByte * 3) + 1;
@@ -207,7 +205,7 @@ protected:
 	{
 		WriteByte(value);
 
-		SerialInstance->write(BitCode::CodeMasterStop);
+		SerialInstance->write((uint8_t)BitCode::CodeMasterStop);
 
 		// Expected echo bytes: 4 bit pairs and 1 stop code.
 		EchoBytes = BytesPerByte + 1;
@@ -246,16 +244,16 @@ private:
 			switch (bitPair)
 			{
 			case 0b00:
-				SerialInstance->write(BitPair::Code00);
+				SerialInstance->write((uint8_t)BitPair::Code00);
 				break;
 			case 0b01:
-				SerialInstance->write(BitPair::Code01);
+				SerialInstance->write((uint8_t)BitPair::Code01);
 				break;
 			case 0b10:
-				SerialInstance->write(BitPair::Code10);
+				SerialInstance->write((uint8_t)BitPair::Code10);
 				break;
 			case 0b11:
-				SerialInstance->write(BitPair::Code11);
+				SerialInstance->write((uint8_t)BitPair::Code11);
 				break;
 			default:
 				return;

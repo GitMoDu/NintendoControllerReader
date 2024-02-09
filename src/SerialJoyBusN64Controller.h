@@ -15,7 +15,7 @@
 class SerialJoyBusN64Controller : public SerialJoyBus<4>
 {
 private:
-	enum CommandCode
+	enum class CommandCode : uint8_t
 	{
 		StatusCode = 0x00,
 		PollCode = 0x01,
@@ -25,14 +25,20 @@ private:
 		NoCommandCode = 0xF0
 	};
 
-	enum ResponseStatusCode
+	enum class ResponseCode : uint8_t
+	{
+		ReadCode = (uint8_t)~(uint8_t)CommandCode::ReadCode,
+		ResetCode = (uint8_t)~(uint8_t)CommandCode::ResetCode
+	};
+
+	enum class ResponseStatusCode : uint8_t
 	{
 		ErrorCRC = 0x04,
 		NoPakDetected = 0x02,
 		ControllerOrRumblePakDetected = 0x01,
 	};
 
-	enum ResponseSize
+	enum class ResponseSize : uint8_t
 	{
 		StatusSize = 3,
 		PollSize = 4,
@@ -57,7 +63,7 @@ public:
 		SerialDiscard();
 		BufferDiscard();
 		LastCommandSent = CommandCode::PollCode;
-		Transmit1Byte(CommandCode::PollCode);
+		Transmit1Byte((uint8_t)CommandCode::PollCode);
 	}
 
 	// Can be called after ~1 ms of poll, if low latency is desired.
@@ -71,13 +77,13 @@ public:
 			switch (LastCommandSent)
 			{
 			case CommandCode::StatusCode:
-				if (ResponseBufferSize >= ResponseSize::StatusSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::StatusSize)
 				{
 					//TODO: Handle on status received.
 				}
 				break;
 			case CommandCode::PollCode:
-				if (ResponseBufferSize >= ResponseSize::PollSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize)
 				{
 					// Update controller values.
 					// 7th bit of second byte is undefined.
@@ -90,26 +96,26 @@ public:
 				}
 				break;
 			case CommandCode::ReadCode:
-				if (ResponseBufferSize >= ResponseSize::ReadSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::ReadSize)
 				{
 					// TODO: Handle on data read.
 				}
 				break;
 			case CommandCode::WriteCode:
-				if (ResponseBufferSize >= ResponseSize::WriteSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::WriteSize)
 				{
 					// Validate Ok response.
-					if (ResponseBuffer[0] == ~ReadCode)
+					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ReadCode)
 					{
 						//TODO: Handle on write ok.
 					}
 				}
 				break;
 			case CommandCode::ResetCode:
-				if (ResponseBufferSize >= ResponseSize::ResetSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::ResetSize)
 				{
 					// Check for Command response.
-					if (ResponseBuffer[0] == ~ResetCode)
+					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ResetCode)
 					{
 						//TODO: Handle on reset command ok.
 					}

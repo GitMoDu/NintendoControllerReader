@@ -11,7 +11,7 @@
 class SerialJoyBusGCController : public SerialJoyBus<8>
 {
 private:
-	enum CommandCode
+	enum class CommandCode : uint8_t
 	{
 		NoCommandCode = 0xFF,
 		//StatusCode = 0x10, //TODO:
@@ -20,15 +20,15 @@ private:
 
 	};
 
-	enum ResponseSize
+	enum class ResponseSize : uint8_t
 	{
 		WakeUpSize = 3, // Full transaction takes ~140 us.
 		PollSize = 8, // Full transaction takes ~370 us.
 		ResetSize = 1
 	};
 
-	static const uint32_t PollCodeNoRumble = 0b000000000000001101000000;
-	static const uint32_t PollCodeRumble = 0b000000000000001101000001;
+	static constexpr uint32_t PollCodeNoRumble = 0b000000000000001101000000;
+	static constexpr uint32_t PollCodeRumble = 0b000000000000001101000001;
 
 	CommandCode LastCommandSent = CommandCode::NoCommandCode;
 
