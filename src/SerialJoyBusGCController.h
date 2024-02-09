@@ -57,7 +57,7 @@ public:
 		{
 			// Send a wake-up code, if controller isn't responding to polling.
 			LastCommandSent = CommandCode::WakeUpCode;
-			Transmit1Byte(CommandCode::WakeUpCode);
+			Transmit1Byte((uint8_t)CommandCode::WakeUpCode);
 		}
 	}
 
@@ -78,7 +78,7 @@ public:
 				//	}
 				//	break;
 			case CommandCode::WakeUpCode:
-				if (ResponseBufferSize >= ResponseSize::WakeUpSize)
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::WakeUpSize)
 				{
 					//TODO: Handle on status received.
 					ControllerActive = true;
@@ -89,7 +89,7 @@ public:
 				}
 				break;
 			case CommandCode::PollCode:
-				if (ResponseBufferSize >= ResponseSize::PollSize &&
+				if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize &&
 					(ResponseBuffer[1] & 0x80)) // Last bit of second byte should be true.
 				{
 					// Update controller values.
@@ -129,7 +129,7 @@ public:
 
 		BufferDiscard();
 
-		return ControllerActive && LastCommandSent && CommandCode::PollCode;
+		return ControllerActive;
 	}
 };
 #endif
