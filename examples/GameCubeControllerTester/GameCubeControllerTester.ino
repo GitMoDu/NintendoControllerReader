@@ -1,14 +1,18 @@
 #include <BitBangGCController.h>
 #include <SerialJoyBusGCController.h>
 
-
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint32_t CONTROLLER_PIN = PA0;
 
 GameCube::Data_t RawData;
-BitBangGCController BitBangGC(CONTROLLER_PIN);
 
+#if defined(ARDUINO_ARCH_STM32F1)
 HardwareSerial* SerialInstance = &Serial3;
+
+const uint32_t CONTROLLER_PIN = D11;
+BitBangGCController BitBangGC(CONTROLLER_PIN);
+#else
+HardwareSerial* SerialInstance = &Serial;
+#endif
 
 SerialJoyBusGCController JoyBusGC(SerialInstance);
 
@@ -95,7 +99,7 @@ void loop()
 
 		Serial.println();
 
-		delay(20);
+		delay(10);
 	}
 	else
 	{

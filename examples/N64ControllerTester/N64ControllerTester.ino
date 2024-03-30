@@ -2,13 +2,17 @@
 #include <SerialJoyBusN64Controller.h>
 
 const uint32_t SERIAL_BAUD_RATE = 115200;
-const uint32_t CONTROLLER_PIN = PA0;
 
 Nintendo64::Data_t RawData;
 
-BitBangN64Controller BitBangN64(CONTROLLER_PIN);
-
+#if defined(ARDUINO_ARCH_STM32F1)
 HardwareSerial* SerialInstance = &Serial3;
+
+const uint32_t CONTROLLER_PIN = D11;
+BitBangN64Controller BitBangN64(CONTROLLER_PIN);
+#else
+HardwareSerial* SerialInstance = &Serial;
+#endif
 
 SerialJoyBusN64Controller JoyBusN64(SerialInstance);
 
@@ -87,7 +91,7 @@ void loop()
 
 		Serial.println();
 
-		delay(100);
+		delay(10);
 	}
 	else
 	{
