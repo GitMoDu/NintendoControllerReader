@@ -29,9 +29,6 @@
 #ifndef _SERIALJOYBUS_h
 #define _SERIALJOYBUS_h
 
-#ifndef ARDUINO_ARCH_STM32F1
-#error This library driver only supports STM32F1.
-#else
 #include <HardwareSerial.h>
 #include <stdint.h>
 
@@ -40,16 +37,16 @@ class SerialJoyBus
 {
 private:
 	//	JoyBus protocol baud-rate.
-	static const uint32_t RealBaudrate = 250000;
+	static constexpr uint32_t RealBaudrate = 250000;
 
 	// Each converted byte gives 2 bits.
-	static const uint8_t ByteBits = 2;
+	static constexpr uint8_t ByteBits = 2;
 
 	// We need 4 bytes of codes to fill a byte.
-	static const uint8_t BytesPerByte = 8 / ByteBits;
+	static constexpr uint8_t BytesPerByte = 8 / ByteBits;
 
 	// The real hardware baud-rate of 1250000 bps.
-	static const uint32_t ConverterBaudrate = RealBaudrate * (BytesPerByte + 1);
+	static constexpr uint32_t ConverterBaudrate = RealBaudrate * (BytesPerByte + 1);
 
 	// Data codes converted to serial values.
 	enum class BitPair : uint8_t
@@ -83,7 +80,7 @@ private:
 
 protected:
 	// The buffered response, from the converted bytes from serial.
-	uint8_t ResponseBuffer[MaxResponseSize];
+	uint8_t ResponseBuffer[MaxResponseSize]{};
 	uint8_t ResponseBufferSize = 0;
 
 public:
@@ -286,5 +283,4 @@ private:
 		}
 	}
 };
-#endif
 #endif

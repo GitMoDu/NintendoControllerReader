@@ -5,21 +5,7 @@
 
 namespace Nintendo64
 {
-	struct Data_t
-	{
-		uint16_t Buttons;
-		int8_t JoystickX;
-		int8_t JoystickY;
-
-		void Reset()
-		{
-			Buttons = 0;
-			JoystickX = 0;
-			JoystickY = 0;
-		}
-	};
-
-	enum Buttons
+	enum class ButtonsEnum : uint8_t
 	{
 		Right = 0,
 		Left = 1,
@@ -37,10 +23,47 @@ namespace Nintendo64
 		L = 13,
 		ControllerReset = 15
 	};
+
+	struct Data_t
+	{
+		uint16_t Buttons;
+		int8_t JoystickX;
+		int8_t JoystickY;
+
+		void Reset()
+		{
+			Buttons = 0;
+			JoystickX = 0;
+			JoystickY = 0;
+		}
+
+		template<const ButtonsEnum button>
+		const bool Button()
+		{
+			return Buttons & (((uint16_t)1) << ((uint8_t)button));
+		}
+	};
 }
 
 namespace GameCube
 {
+	//TODO: Check values.
+	enum class ButtonsEnum
+	{
+		A = 0,
+		B = 1,
+		X = 2,
+		Y = 3,
+		Start = 4,
+		Left = 8,
+		Right = 9,
+		Down = 10,
+		Up = 11,
+		Z = 12,
+		R = 13,
+		L = 14
+	};
+
 	struct Data_t
 	{
 		uint16_t Buttons;
@@ -61,24 +84,12 @@ namespace GameCube
 			SliderLeft = 0;
 			SliderRight = 0;
 		}
-	};
 
-	//TODO: Check values.
-	enum Buttons
-	{
-		A = 0,
-		B = 1,
-		X = 2,
-		Y = 3,
-		Start = 4,
-		Left = 8,
-		Right = 9,
-		Down = 10,
-		Up = 11,
-		Z = 12,
-		R = 13,
-		L = 14
+		template<const ButtonsEnum button>
+		const bool Button()
+		{
+			return Buttons & (((uint16_t)1) << ((uint8_t)button));
+		}
 	};
 }
-
 #endif
