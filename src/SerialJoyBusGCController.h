@@ -64,8 +64,9 @@ public:
 	}
 
 	/// <summary>
-	/// Can be called after ~2 ms of poll, if low latency is desired,
-	/// or just before a poll, for simplicity. 
+	/// Can be called after ~1 ms of poll, for simple implementation.
+	/// For low latency, it might need to be called multiple times,
+	/// before updating controller values and fire events.
 	/// Will update controller values.
 	/// </summary>
 	/// <returns>True when a response was found.</returns>
@@ -73,51 +74,10 @@ public:
 	{
 		if (GetResponseBuffer())
 		{
-			// Validate for size based on expected response.
-			switch (LastCommandSent)
+			if (ProcessResponse())
 			{
-				//case CommandCode::StatusCode:
-				//	if (ResponseBufferSize >= ResponseSize::StatusSize)
-				//	{
-				//		//TODO: Handle on status received.
-				//	}
-				//	break;
-			case CommandCode::WakeUpCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::WakeUpSize)
-				{
-					//TODO: Handle on status received.
-					ControllerActive = true;
-				}
-				else
-				{
-					ControllerActive = false;
-				}
-				break;
-			case CommandCode::PollCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize &&
-					(ResponseBuffer[1] & 0x80)) // Last bit of second byte should be true.
-				{
-					// Update controller values.
-					// 2nd bit of second byte is undefined.
-					Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0x7F) << 8);
-					Data.JoystickX = ResponseBuffer[2] - INT8_MAX;
-					Data.JoystickY = ResponseBuffer[3] - INT8_MAX;
-					Data.JoystickCX = ResponseBuffer[4] - INT8_MAX;
-					Data.JoystickCY = ResponseBuffer[5] - INT8_MAX;
-					Data.SliderLeft = ResponseBuffer[6];
-					Data.SliderRight = ResponseBuffer[7];
-
-					ControllerActive = true;
-				}
-				else
-				{
-					ControllerActive = false;
-				}
-				break;
-			default:
-				// Should never happen.
-				ControllerActive = false;
-				break;
+				BufferDiscard();
+				SerialDiscard();
 			}
 		}
 		else if (LastCommandSent == CommandCode::PollCode)
@@ -132,9 +92,62 @@ public:
 			Data.Reset();
 		}
 
-		BufferDiscard();
-
 		return ControllerActive;
+	}
+
+private:
+	const bool ProcessResponse()
+	{
+		// Validate for size based on expected response.
+		switch (LastCommandSent)
+		{
+			//case CommandCode::StatusCode:
+				//TODO: Handle on status received.
+				//break;
+		case CommandCode::WakeUpCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::WakeUpSize)
+			{
+				//TODO: Handle on status received.
+				ControllerActive = true;
+				return true;
+			}
+			else
+			{
+				ControllerActive = false;
+			}
+			break;
+		case CommandCode::PollCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize) // Last bit of second byte should be true.
+			{
+				//if (ResponseBuffer[1] & 0x80) // Last bit of second byte should be true.
+				{
+					// Update controller values.
+					// 2nd bit of second byte is undefined.
+					Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0x7F) << 8);
+					Data.JoystickX = ResponseBuffer[2] - INT8_MAX;
+					Data.JoystickY = ResponseBuffer[3] - INT8_MAX;
+					Data.JoystickCX = ResponseBuffer[4] - INT8_MAX;
+					Data.JoystickCY = ResponseBuffer[5] - INT8_MAX;
+					Data.SliderLeft = ResponseBuffer[6];
+					Data.SliderRight = ResponseBuffer[7];
+
+					ControllerActive = true;
+				}
+
+				return true;
+			}
+			else
+			{
+				ControllerActive = false;
+			}
+			break;
+		default:
+			// Should never happen.
+			return true;
+			break;
+		}
+
+		return false;
 	}
 };
 #endif

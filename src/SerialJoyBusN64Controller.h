@@ -6,8 +6,9 @@
 #include "SerialJoyBus\SerialJoyBus.h"
 #include <NintendoControllerData.h>
 
-
-// Basic controller poller-reader, no support for controller paks.
+/// <summary>
+/// Basic controller poller-reader, no support for controller paks.
+/// </summary>
 class SerialJoyBusN64Controller : public SerialJoyBus<4>
 {
 private:
@@ -73,58 +74,7 @@ public:
 	{
 		if (GetResponseBuffer())
 		{
-			// Validate for size based on expected response.
-			switch (LastCommandSent)
-			{
-			case CommandCode::StatusCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::StatusSize)
-				{
-					//TODO: Handle on status received.
-				}
-				break;
-			case CommandCode::PollCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize)
-				{
-					// Update controller values.
-					// 7th bit of second byte is undefined.
-					Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xBF) << 8);
-					Data.JoystickX = ResponseBuffer[2];
-					Data.JoystickY = ResponseBuffer[3];
-
-					BufferDiscard();
-					return true;
-				}
-				break;
-			case CommandCode::ReadCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::ReadSize)
-				{
-					// TODO: Handle on data read.
-				}
-				break;
-			case CommandCode::WriteCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::WriteSize)
-				{
-					// Validate Ok response.
-					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ReadCode)
-					{
-						//TODO: Handle on write ok.
-					}
-				}
-				break;
-			case CommandCode::ResetCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::ResetSize)
-				{
-					// Check for Command response.
-					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ResetCode)
-					{
-						//TODO: Handle on reset command ok.
-					}
-				}
-				break;
-			default:
-				// Should never happen.
-				break;
-			}
+			return ProcessResponse();
 		}
 
 		BufferDiscard();
@@ -132,72 +82,63 @@ public:
 		return false;
 	}
 
-	/// <summary>
-	/// Can be called after ~1 ms of poll, if low latency is desired.
-	/// Might need to be called multiple times,
-	/// before updating controller values and fire events.
-	/// </summary>
-	/// <returns>True when a response was found.</returns>
-	const bool ReadAsync()
+private:
+	const bool ProcessResponse()
 	{
-		if (GetResponseBufferAsync())
+		// Validate for size based on expected response.
+		switch (LastCommandSent)
 		{
-			// Validate for size based on expected response.
-			switch (LastCommandSent)
+		case CommandCode::StatusCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::StatusSize)
 			{
-			case CommandCode::StatusCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::StatusSize)
-				{
-					//TODO: Handle on status received.
-				}
-				break;
-			case CommandCode::PollCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize)
-				{
-					// Update controller values.
-					// 7th bit of second byte is undefined.
-					Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xBF) << 8);
-					Data.JoystickX = ResponseBuffer[2];
-					Data.JoystickY = ResponseBuffer[3];
-
-					BufferDiscard();
-					SerialDiscard();
-					return true;
-				}
-				break;
-			case CommandCode::ReadCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::ReadSize)
-				{
-					// TODO: Handle on data read.
-				}
-				break;
-			case CommandCode::WriteCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::WriteSize)
-				{
-					// Validate Ok response.
-					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ReadCode)
-					{
-						//TODO: Handle on write ok.
-					}
-				}
-				break;
-			case CommandCode::ResetCode:
-				if (ResponseBufferSize >= (uint8_t)ResponseSize::ResetSize)
-				{
-					// Check for Command response.
-					if (ResponseBuffer[0] == (uint8_t)ResponseCode::ResetCode)
-					{
-						//TODO: Handle on reset command ok.
-					}
-				}
-				break;
-			default:
-				// Should never happen.
-				break;
+				BufferDiscard();
+				//TODO: Handle on status received.
 			}
+			break;
+		case CommandCode::PollCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::PollSize)
+			{
+				// Update controller values.
+				// 7th bit of second byte is undefined.
+				Data.Buttons = ResponseBuffer[0] + ((ResponseBuffer[1] & 0xBF) << 8);
+				Data.JoystickX = ResponseBuffer[2];
+				Data.JoystickY = ResponseBuffer[3];
 
+				BufferDiscard();
+				return true;
+			}
+			break;
+		case CommandCode::ReadCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::ReadSize)
+			{
+				// TODO: Handle on data read.
+			}
+			break;
+		case CommandCode::WriteCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::WriteSize)
+			{
+				// Validate Ok response.
+				if (ResponseBuffer[0] == (uint8_t)ResponseCode::ReadCode)
+				{
+					//TODO: Handle on write ok.
+				}
+			}
+			break;
+		case CommandCode::ResetCode:
+			if (ResponseBufferSize >= (uint8_t)ResponseSize::ResetSize)
+			{
+				// Check for Command response.
+				if (ResponseBuffer[0] == (uint8_t)ResponseCode::ResetCode)
+				{
+					BufferDiscard();
+					//TODO: Handle on reset command ok.
+				}
+			}
+			break;
+		default:
+			// Should never happen.
 			BufferDiscard();
-			SerialDiscard();
+			break;
 		}
 
 		return false;

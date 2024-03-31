@@ -26,11 +26,12 @@
 //	Interrupts aren't blocked nor used.
 
 
-#ifndef _SERIALJOYBUS_h
-#define _SERIALJOYBUS_h
+#ifndef _SERIAL_JOYBUS_h
+#define _SERIAL_JOYBUS_h
 
 #include <HardwareSerial.h>
 #include <stdint.h>
+
 
 template<const uint8_t MaxResponseSize>
 class SerialJoyBus
@@ -163,31 +164,6 @@ protected:
 	const bool GetResponseBuffer()
 	{
 		while (ResponseBufferSize <= MaxResponseSize &&
-			SerialInstance->available())
-		{
-			// Discard echo bytes.
-			if (EchoBytes > 0)
-			{
-				SerialInstance->read();
-				EchoBytes--;
-			}
-			else if (ReadByte())
-			{
-				// Stop bit detected, message received.
-				return ResponseBufferSize > 0;
-			}
-		}
-
-		return false;
-	}
-
-	/// <summary>
-	/// Fills the response buffer until serial input is clear or the receive buffer is full.
-	/// </summary>
-	/// <returns>True when a message is available.</returns>
-	const bool GetResponseBufferAsync()
-	{
-		if (ResponseBufferSize <= MaxResponseSize &&
 			SerialInstance->available())
 		{
 			// Discard echo bytes.
