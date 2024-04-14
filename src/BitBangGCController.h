@@ -3,9 +3,7 @@
 
 #include <NintendoControllerData.h>
 
-#ifndef ARDUINO_ARCH_STM32F1
-#error This library driver only supports STM32F1.
-#else
+#ifdef ARDUINO_ARCH_STM32F1
 #include "BitBangJoyBus\BitBangJoyBusSTM32.h"
 
 class BitBangGCController : public BitBangJoyBusSTM32

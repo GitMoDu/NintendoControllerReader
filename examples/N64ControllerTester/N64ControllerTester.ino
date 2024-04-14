@@ -52,6 +52,7 @@ const bool SerialJoyLoop()
 	}
 }
 
+#if defined(ARDUINO_ARCH_STM32F1)
 const bool BitBangJoyLoop()
 {
 	if (BitBangN64.Poll())
@@ -72,6 +73,7 @@ const bool BitBangJoyLoop()
 		return false;
 	}
 }
+#endif
 
 void loop()
 {

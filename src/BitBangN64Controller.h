@@ -3,10 +3,7 @@
 
 #include <NintendoControllerData.h>
 
-#ifndef ARDUINO_ARCH_STM32F1
-#error This library driver only supports STM32F1. 
-#error Try instead https://github.com/NicoHood/Nintendo for Arduino AVR.
-#else
+#ifdef ARDUINO_ARCH_STM32F1
 #include "BitBangJoyBus\BitBangJoyBusSTM32.h"
 
 class BitBangN64Controller : public BitBangJoyBusSTM32
