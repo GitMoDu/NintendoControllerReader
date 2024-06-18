@@ -1,3 +1,8 @@
+## Library Deprecated
+Archival is preserved for backwards compatibility of existing projects.
+
+Replacement library [JoybusOverUart](https://github.com/GitMoDu/JoybusOverUart).
+
 ## NintendoControllerReader
 Library for reading Nintendo game controllers on Arduino boards, targeted at STM32F1/Maple Mini boards.
 
